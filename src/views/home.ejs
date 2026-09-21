@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>¡Ja que mate! — Mates, bombillas y termos</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+    <button class="cart-btn" id="openCart">Carrito <span class="cart-count" id="cartCount">0</span></button>
+  </nav>
+
+  <div class="wrap">
+    <section class="block">
+      <div class="block-head">
+        <p class="eyebrow">Imperiales · Torpedos · Camioneros</p>
+        <h1>Todo para tu mejor momento</h1>
+        <p>Elegí tus productos y sumalos al carrito. Podés pagar con Mercado Pago (tarjeta, dinero en cuenta o efectivo) o coordinar transferencia por WhatsApp.</p>
+      </div>
+
+      <div class="cat-filters" id="catFilters">
+        <button class="active" data-cat="todas">Todas</button>
+        <% categorias.forEach(function(cat){ %>
+          <button data-cat="<%= cat %>"><%= cat %></button>
+        <% }) %>
+      </div>
+
+      <div class="product-grid" id="productGrid">
+        <% productos.forEach(function(p){ %>
+          <article class="product-card" data-cat="<%= p.categoria %>">
+            <div class="thumb <%= p.imagen_url ? '' : 'empty' %>">
+              <% if (p.imagen_url) { %>
+                <img src="<%= p.imagen_url %>" alt="<%= p.nombre %>">
+              <% } else { %>
+                Foto a confirmar
+              <% } %>
+            </div>
+            <div class="body">
+              <span class="cat-tag"><%= p.categoria %></span>
+              <h3><%= p.nombre %></h3>
+              <% if (p.stock <= 0) { %><span class="out-badge">Sin stock</span><% } %>
+              <div class="prices">
+                <span class="price-lista">$<%= p.precios.precioLista.toLocaleString('es-AR') %></span>
+                <span class="price-mp">MP $<%= p.precios.precioMercadoPago.toLocaleString('es-AR') %></span>
+              </div>
+              <button
+                class="add-btn"
+                data-id="<%= p.id %>"
+                data-nombre="<%= p.nombre %>"
+                data-precio="<%= p.precios.precioLista %>"
+                data-imagen="<%= p.imagen_url || '' %>"
+                <%= p.stock <= 0 ? 'disabled' : '' %>
+              ><%= p.stock <= 0 ? 'Sin stock' : 'Agregar al carrito' %></button>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </div>
+
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+      <h3>Tu carrito</h3>
+      <button class="close-btn" id="closeCart">✕</button>
+    </div>
+    <div class="cart-drawer-items" id="cartItems"></div>
+    <div class="cart-drawer-foot">
+      <div class="cart-total"><span>Total (transferencia)</span><span id="cartTotalLista">$0</span></div>
+      <div class="cart-total"><span>Total con Mercado Pago</span><span id="cartTotalMp">$0</span></div>
+      <button class="btn btn-primary" id="payMp">Pagar con Mercado Pago</button>
+      <button class="btn btn-ghost" id="payTransferencia">Pedir por transferencia (WhatsApp)</button>
+    </div>
+  </aside>
+
+  <footer>
+    <div class="wrap foot-row">
+      <p>¡Ja que mate! — mates únicos, hechos a tu manera.</p>
+      <p>Pagos verificados con Mercado Pago.</p>
+    </div>
+  </footer>
+
+  <script>window.WHATSAPP_NUMBER = "<%= whatsappNumber %>";</script>
+  <script src="/js/carrito.js"></script>
+</body>
+</html>

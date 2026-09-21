@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ja-que-mate
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start:render
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: development
+      - key: HOST
+        value: 0.0.0.0
+      - key: DB_PATH
+        value: ./data/mates.db
+      - key: RECARGO_MP_DEFAULT_PCT
+        value: "6"
+      - key: WHATSAPP_NUMBER
+        value: "5490000000000"

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= producto ? producto.nombre + ' — ¡Ja que mate!' : 'Producto no encontrado' %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+    <button class="cart-btn" id="openCart">Carrito <span class="cart-count" id="cartCount">0</span></button>
+  </nav>
+
+  <div class="wrap">
+    <% if (!producto) { %>
+      <div class="status-card">
+        <h2>No encontramos ese producto</h2>
+        <a class="btn btn-ghost" href="/">Volver al catálogo</a>
+      </div>
+    <% } else { %>
+      <section class="block" style="display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;">
+        <div class="thumb <%= producto.imagen_url ? '' : 'empty' %>" style="border-radius:10px; border:1px solid var(--line);">
+          <% if (producto.imagen_url) { %>
+            <img src="<%= producto.imagen_url %>" alt="<%= producto.nombre %>">
+          <% } else { %>
+            Foto a confirmar
+          <% } %>
+        </div>
+        <div>
+          <span class="cat-tag eyebrow"><%= producto.categoria %></span>
+          <h1 style="margin-top:8px;"><%= producto.nombre %></h1>
+          <% if (producto.descripcion) { %><p style="color:var(--ink-soft); margin-top:10px;"><%= producto.descripcion %></p><% } %>
+          <div class="prices" style="margin-top:18px;">
+            <span class="price-lista" style="font-size:1.3rem;">$<%= producto.precios.precioLista.toLocaleString('es-AR') %></span>
+            <span class="price-mp">MP $<%= producto.precios.precioMercadoPago.toLocaleString('es-AR') %></span>
+          </div>
+          <% if (producto.stock <= 0) { %>
+            <p class="out-badge" style="margin-top:14px;">Sin stock</p>
+          <% } else { %>
+            <button
+              class="add-btn"
+              style="margin-top:18px;"
+              data-id="<%= producto.id %>"
+              data-nombre="<%= producto.nombre %>"
+              data-precio="<%= producto.precios.precioLista %>"
+              data-imagen="<%= producto.imagen_url || '' %>"
+            >Agregar al carrito</button>
+          <% } %>
+        </div>
+      </section>
+    <% } %>
+  </div>
+
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-head">
+      <h3>Tu carrito</h3>
+      <button class="close-btn" id="closeCart">✕</button>
+    </div>
+    <div class="cart-drawer-items" id="cartItems"></div>
+    <div class="cart-drawer-foot">
+      <div class="cart-total"><span>Total (transferencia)</span><span id="cartTotalLista">$0</span></div>
+      <div class="cart-total"><span>Total con Mercado Pago</span><span id="cartTotalMp">$0</span></div>
+      <button class="btn btn-primary" id="payMp">Pagar con Mercado Pago</button>
+      <button class="btn btn-ghost" id="payTransferencia">Pedir por transferencia (WhatsApp)</button>
+    </div>
+  </aside>
+
+  <script>window.WHATSAPP_NUMBER = "<%= typeof whatsappNumber !== 'undefined' ? whatsappNumber : '' %>";</script>
+  <script src="/js/carrito.js"></script>
+</body>
+</html>

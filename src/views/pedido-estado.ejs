@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tu pedido — ¡Ja que mate!</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+  </nav>
+
+  <div class="wrap">
+    <% if (!pedido) { %>
+      <div class="status-card">
+        <h2>No encontramos ese pedido</h2>
+        <p>Revisá el link o escribinos por WhatsApp para ayudarte.</p>
+      </div>
+    <% } else { %>
+      <div class="status-card">
+        <span class="status-badge <%= pedido.estado %>"><%= pedido.estado %></span>
+        <h2>Pedido #<%= pedido.id %></h2>
+        <p>
+          <% if (pedido.estado === 'pagado') { %>
+            Pago confirmado por Mercado Pago. ¡Gracias por tu compra!
+          <% } else if (pedido.estado === 'pendiente' && pedido.metodo_pago === 'transferencia') { %>
+            Registramos tu pedido. Coordiná la transferencia por WhatsApp para confirmarlo.
+          <% } else if (pedido.estado === 'pendiente') { %>
+            Tu pago está siendo procesado por Mercado Pago. Esta página se va a actualizar cuando se confirme.
+          <% } else { %>
+            El pago no se pudo completar. Podés intentar de nuevo o escribirnos por WhatsApp.
+          <% } %>
+        </p>
+        <div style="text-align:left; margin-top:20px;">
+          <% items.forEach(function(item){ %>
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line);">
+              <span><%= item.cantidad %>x <%= item.nombre_snapshot %></span>
+              <span>$<%= (item.precio_unitario_snapshot * item.cantidad).toLocaleString('es-AR') %></span>
+            </div>
+          <% }) %>
+          <div style="display:flex; justify-content:space-between; padding:12px 0; font-weight:700;">
+            <span>Total cobrado</span>
+            <span>$<%= pedido.total_cobrado.toLocaleString('es-AR') %></span>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>
