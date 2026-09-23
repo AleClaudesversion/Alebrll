@@ -1,23 +1,18 @@
-const configRepo = require('../db/repositories/config.repo');
+const METODOS_VALIDOS = ['efectivo', 'transferencia', 'mercadopago'];
 
-/**
- * Redondea al centenar mas cercano - los precios del catalogo son multiplos de 100.
- */
-function redondearCentena(valor) {
-  return Math.round(valor / 100) * 100;
-}
-
-function precioConRecargoMp(precioLista, recargoPct) {
-  return redondearCentena(precioLista / (1 - recargoPct / 100));
-}
-
-function calcularPrecios(precioLista, recargoPctOverride) {
-  const recargoPct = recargoPctOverride ?? configRepo.obtenerRecargoMpPct();
+function preciosDe(producto) {
   return {
-    precioLista,
-    precioMercadoPago: precioConRecargoMp(precioLista, recargoPct),
-    recargoPct,
+    efectivo: producto.precio_efectivo,
+    transferencia: producto.precio_transferencia,
+    cuotas: producto.precio_cuotas,
   };
 }
 
-module.exports = { redondearCentena, precioConRecargoMp, calcularPrecios };
+function precioParaMetodo(producto, metodoPago) {
+  if (metodoPago === 'efectivo') return producto.precio_efectivo;
+  if (metodoPago === 'transferencia') return producto.precio_transferencia;
+  if (metodoPago === 'mercadopago') return producto.precio_cuotas;
+  throw new Error(`Metodo de pago desconocido: ${metodoPago}`);
+}
+
+module.exports = { METODOS_VALIDOS, preciosDe, precioParaMetodo };

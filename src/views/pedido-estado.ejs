@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tu pedido — ¡Ja que mate!</title>
+  <title>Tu pedido — Bianchi Joyería</title>
+  <link rel="icon" href="/img/logo-bianchi.png">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <nav class="nav">
-    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+    <a class="brand" href="/"><img class="mark" src="/img/logo-bianchi.png" alt="Bianchi Joyería">Bianchi Joyería</a>
   </nav>
 
   <div class="wrap">
@@ -26,6 +27,8 @@
             Pago confirmado por Mercado Pago. ¡Gracias por tu compra!
           <% } else if (pedido.estado === 'pendiente' && pedido.metodo_pago === 'transferencia') { %>
             Registramos tu pedido. Coordiná la transferencia por WhatsApp para confirmarlo.
+          <% } else if (pedido.estado === 'pendiente' && pedido.metodo_pago === 'efectivo') { %>
+            Registramos tu pedido. Coordiná el retiro en persona y el pago en efectivo por WhatsApp.
           <% } else if (pedido.estado === 'pendiente') { %>
             Tu pago está siendo procesado por Mercado Pago. Esta página se va a actualizar cuando se confirme.
           <% } else { %>

@@ -10,7 +10,6 @@ const env = {
   MP_ACCESS_TOKEN: process.env.MP_ACCESS_TOKEN || '',
   MP_WEBHOOK_SECRET: process.env.MP_WEBHOOK_SECRET || '',
   PUBLIC_BASE_URL: (process.env.PUBLIC_BASE_URL || process.env.RENDER_EXTERNAL_URL || '').replace(/\/$/, ''),
-  RECARGO_MP_DEFAULT_PCT: Number(process.env.RECARGO_MP_DEFAULT_PCT || 6),
   WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER || '',
 };
 

@@ -1,6 +1,6 @@
-# ¡Ja que mate! — Ecommerce
+# Bianchi Joyería — Ecommerce
 
-Catálogo, carrito y checkout con Mercado Pago para el emprendimiento de mates "¡Ja que mate!".
+Catálogo, carrito y checkout con Mercado Pago para Bianchi Joyería.
 
 ## Desarrollo local
 
@@ -22,7 +22,7 @@ npm test
 
 ## Cargar/actualizar el catálogo
 
-Editar `scripts/seed-productos.json` (por producto: slug, nombre, categoría, precio, stock, imagen) y correr:
+Editar `scripts/seed-productos.json` (por producto: slug, nombre, categoría, precio_efectivo, precio_transferencia, precio_cuotas, stock, imagen) y correr:
 
 ```bash
 npm run seed
@@ -30,13 +30,9 @@ npm run seed
 
 Es un upsert por `slug`: actualiza los productos existentes y agrega los nuevos, sin borrar nada.
 
-## Cambiar el % de recargo de Mercado Pago
+## Precios por método de pago
 
-```bash
-node scripts/set-recargo-mp.js 6.5
-```
-
-Aplica al instante en todo el sitio, sin reiniciar el servidor.
+Cada producto tiene 3 precios cargados a mano (no hay recargo automático): `precio_efectivo` (retiro en persona), `precio_transferencia` y `precio_cuotas` (Mercado Pago). Para cambiar un precio, editar el producto en `scripts/seed-productos.json` y correr `npm run seed` de nuevo.
 
 ## Deploy en el VPS (mismo patrón que Mymatecito)
 

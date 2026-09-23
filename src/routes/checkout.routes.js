@@ -75,4 +75,26 @@ router.post('/api/checkout/transferencia', checkoutLimiter, (req, res) => {
   }
 });
 
+router.post('/api/checkout/efectivo', checkoutLimiter, (req, res) => {
+  const parsed = carritoSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: 'Datos de carrito invalidos', detalle: parsed.error.flatten() });
+  }
+
+  try {
+    const { pedidoId } = pedidosService.crearPedidoEfectivo({
+      itemsSolicitados: parsed.data.items,
+      comprador: parsed.data.comprador,
+      notas: parsed.data.notas,
+    });
+    res.json({ pedidoId });
+  } catch (err) {
+    if (err instanceof pedidosService.CarritoInvalidoError) {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error('Error creando pedido en efectivo:', err);
+    res.status(500).json({ error: 'No se pudo registrar el pedido. Intenta de nuevo.' });
+  }
+});
+
 module.exports = router;

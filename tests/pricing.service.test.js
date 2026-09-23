@@ -1,26 +1,27 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { precioConRecargoMp, redondearCentena } = require('../src/services/pricing.service');
+const { preciosDe, precioParaMetodo } = require('../src/services/pricing.service');
 
-test('redondearCentena redondea al centenar mas cercano', () => {
-  assert.equal(redondearCentena(46808.51), 46800);
-  assert.equal(redondearCentena(46850), 46900);
+const producto = {
+  precio_efectivo: 100000,
+  precio_transferencia: 120000,
+  precio_cuotas: 160000,
+};
+
+test('preciosDe expone los 3 precios manuales del producto', () => {
+  assert.deepEqual(preciosDe(producto), {
+    efectivo: 100000,
+    transferencia: 120000,
+    cuotas: 160000,
+  });
 });
 
-test('precioConRecargoMp cubre exactamente la comision al 6%', () => {
-  const precioLista = 44000;
-  const precioMp = precioConRecargoMp(precioLista, 6);
-  // Si Mercado Pago descuenta 6% sobre el precio MP, lo que queda debe cubrir el precio de lista.
-  const netoRecibido = precioMp * (1 - 0.06);
-  assert.ok(netoRecibido >= precioLista - 50, `neto ${netoRecibido} deberia cubrir ${precioLista}`);
+test('precioParaMetodo devuelve el precio correcto segun el metodo de pago', () => {
+  assert.equal(precioParaMetodo(producto, 'efectivo'), 100000);
+  assert.equal(precioParaMetodo(producto, 'transferencia'), 120000);
+  assert.equal(precioParaMetodo(producto, 'mercadopago'), 160000);
 });
 
-test('precioConRecargoMp con 0% de recargo devuelve el mismo precio (redondeado)', () => {
-  assert.equal(precioConRecargoMp(15000, 0), 15000);
-});
-
-test('precioConRecargoMp escala correctamente con distintos porcentajes', () => {
-  const bajo = precioConRecargoMp(30000, 3);
-  const alto = precioConRecargoMp(30000, 9);
-  assert.ok(alto > bajo, 'a mayor recargo, mayor precio con Mercado Pago');
+test('precioParaMetodo rechaza un metodo de pago desconocido', () => {
+  assert.throws(() => precioParaMetodo(producto, 'bitcoin'));
 });

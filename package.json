@@ -1,12 +1,12 @@
 {
-  "name": "ja-que-mate",
+  "name": "bianchi-joyeria",
   "version": "1.0.0",
-  "description": "Ecommerce de ¡Ja que mate! - mates, bombillas, termos y accesorios",
+  "description": "Ecommerce de Bianchi Joyería - anillos, cadenas y accesorios",
   "private": true,
   "type": "commonjs",
   "main": "src/server.js",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "scripts": {
     "start": "node src/server.js",

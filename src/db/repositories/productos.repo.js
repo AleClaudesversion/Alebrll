@@ -26,15 +26,18 @@ function upsertPorSlug(producto) {
     db.prepare(
       `UPDATE productos SET
         nombre = @nombre, categoria = @categoria, descripcion = @descripcion,
-        precio_lista = @precio_lista, stock = @stock, activo = @activo,
+        precio_efectivo = @precio_efectivo, precio_transferencia = @precio_transferencia,
+        precio_cuotas = @precio_cuotas, stock = @stock, activo = @activo,
         imagen_url = @imagen_url, orden = @orden, actualizado_en = datetime('now')
        WHERE slug = @slug`
     ).run(producto);
     return { id: existente.id, creado: false };
   }
   const info = db.prepare(
-    `INSERT INTO productos (slug, nombre, categoria, descripcion, precio_lista, stock, activo, imagen_url, orden)
-     VALUES (@slug, @nombre, @categoria, @descripcion, @precio_lista, @stock, @activo, @imagen_url, @orden)`
+    `INSERT INTO productos
+      (slug, nombre, categoria, descripcion, precio_efectivo, precio_transferencia, precio_cuotas, stock, activo, imagen_url, orden)
+     VALUES
+      (@slug, @nombre, @categoria, @descripcion, @precio_efectivo, @precio_transferencia, @precio_cuotas, @stock, @activo, @imagen_url, @orden)`
   ).run(producto);
   return { id: info.lastInsertRowid, creado: true };
 }

@@ -35,7 +35,7 @@ async function crearPreference({ pedidoId, items, comprador }) {
     },
     auto_return: 'approved',
     notification_url: `${env.PUBLIC_BASE_URL}/webhooks/mercadopago`,
-    statement_descriptor: 'JAQUEMATE',
+    statement_descriptor: 'BIANCHIJOYERIA',
   };
 
   const result = await preference.create({ body });

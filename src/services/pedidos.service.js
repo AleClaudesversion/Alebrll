@@ -8,8 +8,9 @@ class CarritoInvalidoError extends Error {}
 /**
  * Recalcula el carrito enteramente desde la base de datos - nunca confia en precios
  * o nombres que mande el cliente. Es el unico lugar donde se decide cuanto cuesta un pedido.
+ * El precio de cada item depende del metodo de pago elegido (efectivo/transferencia/mercadopago).
  */
-function recalcularCarrito(itemsSolicitados) {
+function recalcularCarrito(itemsSolicitados, metodoPago) {
   if (!Array.isArray(itemsSolicitados) || itemsSolicitados.length === 0) {
     throw new CarritoInvalidoError('El carrito esta vacio.');
   }
@@ -33,24 +34,21 @@ function recalcularCarrito(itemsSolicitados) {
     return {
       productoId: producto.id,
       nombre: producto.nombre,
-      precioUnitario: producto.precio_lista,
+      precioUnitario: pricingService.precioParaMetodo(producto, metodoPago),
       cantidad,
     };
   });
 
-  const totalLista = items.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0);
-  return { items, totalLista };
+  const total = items.reduce((acc, i) => acc + i.precioUnitario * i.cantidad, 0);
+  return { items, total };
 }
 
 async function iniciarCheckoutMercadoPago({ itemsSolicitados, comprador, notas }) {
-  const { items, totalLista } = recalcularCarrito(itemsSolicitados);
-  const { precioMercadoPago: totalCobrado, recargoPct } = pricingService.calcularPrecios(totalLista);
+  const { items, total } = recalcularCarrito(itemsSolicitados, 'mercadopago');
 
   const pedidoId = pedidosRepo.crear({
     metodoPago: 'mercadopago',
-    totalLista,
-    recargoPctAplicado: recargoPct,
-    totalCobrado,
+    totalCobrado: total,
     comprador,
     notas,
     items,
@@ -68,12 +66,22 @@ async function iniciarCheckoutMercadoPago({ itemsSolicitados, comprador, notas }
 }
 
 function crearPedidoTransferencia({ itemsSolicitados, comprador, notas }) {
-  const { items, totalLista } = recalcularCarrito(itemsSolicitados);
+  const { items, total } = recalcularCarrito(itemsSolicitados, 'transferencia');
   const pedidoId = pedidosRepo.crear({
     metodoPago: 'transferencia',
-    totalLista,
-    recargoPctAplicado: 0,
-    totalCobrado: totalLista,
+    totalCobrado: total,
+    comprador,
+    notas,
+    items,
+  });
+  return { pedidoId };
+}
+
+function crearPedidoEfectivo({ itemsSolicitados, comprador, notas }) {
+  const { items, total } = recalcularCarrito(itemsSolicitados, 'efectivo');
+  const pedidoId = pedidosRepo.crear({
+    metodoPago: 'efectivo',
+    totalCobrado: total,
     comprador,
     notas,
     items,
@@ -137,5 +145,6 @@ module.exports = {
   recalcularCarrito,
   iniciarCheckoutMercadoPago,
   crearPedidoTransferencia,
+  crearPedidoEfectivo,
   procesarWebhookPago,
 };

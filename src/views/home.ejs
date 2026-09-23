@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>¡Ja que mate! — Mates, bombillas y termos</title>
+  <title>Bianchi Joyería</title>
+  <link rel="icon" href="/img/logo-bianchi.png">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <nav class="nav">
-    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+    <a class="brand" href="/"><img class="mark" src="/img/logo-bianchi.png" alt="Bianchi Joyería">Bianchi Joyería</a>
     <button class="cart-btn" id="openCart">Carrito <span class="cart-count" id="cartCount">0</span></button>
   </nav>
 
   <div class="wrap">
     <section class="block">
       <div class="block-head">
-        <p class="eyebrow">Imperiales · Torpedos · Camioneros</p>
         <h1>Todo para tu mejor momento</h1>
-        <p>Elegí tus productos y sumalos al carrito. Podés pagar con Mercado Pago (tarjeta, dinero en cuenta o efectivo) o coordinar transferencia por WhatsApp.</p>
+        <p>Elegí tus productos y sumalos al carrito. Podés pagar en efectivo (retiro en persona), por transferencia, o en cuotas con Mercado Pago.</p>
       </div>
 
       <div class="cat-filters" id="catFilters">
@@ -42,14 +42,17 @@
               <h3><%= p.nombre %></h3>
               <% if (p.stock <= 0) { %><span class="out-badge">Sin stock</span><% } %>
               <div class="prices">
-                <span class="price-lista">$<%= p.precios.precioLista.toLocaleString('es-AR') %></span>
-                <span class="price-mp">MP $<%= p.precios.precioMercadoPago.toLocaleString('es-AR') %></span>
+                <span class="price-lista">Efectivo $<%= p.precios.efectivo.toLocaleString('es-AR') %></span>
+                <span class="price-line">Transferencia $<%= p.precios.transferencia.toLocaleString('es-AR') %></span>
+                <span class="price-line">Cuotas (MP) $<%= p.precios.cuotas.toLocaleString('es-AR') %></span>
               </div>
               <button
                 class="add-btn"
                 data-id="<%= p.id %>"
                 data-nombre="<%= p.nombre %>"
-                data-precio="<%= p.precios.precioLista %>"
+                data-precio-efectivo="<%= p.precios.efectivo %>"
+                data-precio-transferencia="<%= p.precios.transferencia %>"
+                data-precio-cuotas="<%= p.precios.cuotas %>"
                 data-imagen="<%= p.imagen_url || '' %>"
                 <%= p.stock <= 0 ? 'disabled' : '' %>
               ><%= p.stock <= 0 ? 'Sin stock' : 'Agregar al carrito' %></button>
@@ -68,16 +71,18 @@
     </div>
     <div class="cart-drawer-items" id="cartItems"></div>
     <div class="cart-drawer-foot">
-      <div class="cart-total"><span>Total (transferencia)</span><span id="cartTotalLista">$0</span></div>
-      <div class="cart-total"><span>Total con Mercado Pago</span><span id="cartTotalMp">$0</span></div>
-      <button class="btn btn-primary" id="payMp">Pagar con Mercado Pago</button>
+      <div class="cart-total"><span>Total en efectivo</span><span id="cartTotalEfectivo">$0</span></div>
+      <div class="cart-total"><span>Total por transferencia</span><span id="cartTotalTransferencia">$0</span></div>
+      <div class="cart-total"><span>Total en cuotas (Mercado Pago)</span><span id="cartTotalCuotas">$0</span></div>
+      <button class="btn btn-primary" id="payMp">Pagar en cuotas con Mercado Pago</button>
       <button class="btn btn-ghost" id="payTransferencia">Pedir por transferencia (WhatsApp)</button>
+      <button class="btn btn-ghost" id="payEfectivo">Retirar en persona / efectivo (WhatsApp)</button>
     </div>
   </aside>
 
   <footer>
     <div class="wrap foot-row">
-      <p>¡Ja que mate! — mates únicos, hechos a tu manera.</p>
+      <p>Bianchi Joyería — más que accesorios.</p>
       <p>Pagos verificados con Mercado Pago.</p>
     </div>
   </footer>

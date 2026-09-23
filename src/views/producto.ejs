@@ -3,12 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= producto ? producto.nombre + ' — ¡Ja que mate!' : 'Producto no encontrado' %></title>
+  <title><%= producto ? producto.nombre + ' — Bianchi Joyería' : 'Producto no encontrado' %></title>
+  <link rel="icon" href="/img/logo-bianchi.png">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
   <nav class="nav">
-    <a class="brand" href="/"><span class="mark"></span>¡Ja que mate!</a>
+    <a class="brand" href="/"><img class="mark" src="/img/logo-bianchi.png" alt="Bianchi Joyería">Bianchi Joyería</a>
     <button class="cart-btn" id="openCart">Carrito <span class="cart-count" id="cartCount">0</span></button>
   </nav>
 
@@ -32,8 +33,9 @@
           <h1 style="margin-top:8px;"><%= producto.nombre %></h1>
           <% if (producto.descripcion) { %><p style="color:var(--ink-soft); margin-top:10px;"><%= producto.descripcion %></p><% } %>
           <div class="prices" style="margin-top:18px;">
-            <span class="price-lista" style="font-size:1.3rem;">$<%= producto.precios.precioLista.toLocaleString('es-AR') %></span>
-            <span class="price-mp">MP $<%= producto.precios.precioMercadoPago.toLocaleString('es-AR') %></span>
+            <span class="price-lista" style="font-size:1.3rem;">Efectivo $<%= producto.precios.efectivo.toLocaleString('es-AR') %></span>
+            <span class="price-line">Transferencia $<%= producto.precios.transferencia.toLocaleString('es-AR') %></span>
+            <span class="price-line">Cuotas (MP) $<%= producto.precios.cuotas.toLocaleString('es-AR') %></span>
           </div>
           <% if (producto.stock <= 0) { %>
             <p class="out-badge" style="margin-top:14px;">Sin stock</p>
@@ -43,7 +45,9 @@
               style="margin-top:18px;"
               data-id="<%= producto.id %>"
               data-nombre="<%= producto.nombre %>"
-              data-precio="<%= producto.precios.precioLista %>"
+              data-precio-efectivo="<%= producto.precios.efectivo %>"
+              data-precio-transferencia="<%= producto.precios.transferencia %>"
+              data-precio-cuotas="<%= producto.precios.cuotas %>"
               data-imagen="<%= producto.imagen_url || '' %>"
             >Agregar al carrito</button>
           <% } %>
@@ -60,10 +64,12 @@
     </div>
     <div class="cart-drawer-items" id="cartItems"></div>
     <div class="cart-drawer-foot">
-      <div class="cart-total"><span>Total (transferencia)</span><span id="cartTotalLista">$0</span></div>
-      <div class="cart-total"><span>Total con Mercado Pago</span><span id="cartTotalMp">$0</span></div>
-      <button class="btn btn-primary" id="payMp">Pagar con Mercado Pago</button>
+      <div class="cart-total"><span>Total en efectivo</span><span id="cartTotalEfectivo">$0</span></div>
+      <div class="cart-total"><span>Total por transferencia</span><span id="cartTotalTransferencia">$0</span></div>
+      <div class="cart-total"><span>Total en cuotas (Mercado Pago)</span><span id="cartTotalCuotas">$0</span></div>
+      <button class="btn btn-primary" id="payMp">Pagar en cuotas con Mercado Pago</button>
       <button class="btn btn-ghost" id="payTransferencia">Pedir por transferencia (WhatsApp)</button>
+      <button class="btn btn-ghost" id="payEfectivo">Retirar en persona / efectivo (WhatsApp)</button>
     </div>
   </aside>
 

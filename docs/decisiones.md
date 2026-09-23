@@ -20,4 +20,4 @@ Un link de pago único no permite saber qué producto se pagó ni verificar el m
 
 ## Convención de precios
 
-Los precios se guardan como enteros en pesos argentinos (sin centavos), redondeados al centenar más cercano. El recargo de Mercado Pago vive en la tabla `configuracion` (clave `recargo_mp_pct`), nunca hardcodeado, para poder ajustarlo con `scripts/set-recargo-mp.js` sin redeploy.
+Los precios se guardan como enteros en pesos argentinos (sin centavos). Cada producto tiene 3 precios cargados a mano en `productos` (`precio_efectivo`, `precio_transferencia`, `precio_cuotas`), uno por método de pago — no hay un recargo % automático, porque el margen no es un porcentaje fijo entre métodos.

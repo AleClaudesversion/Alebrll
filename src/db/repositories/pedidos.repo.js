@@ -1,17 +1,15 @@
 const db = require('../client');
 
-function crear({ metodoPago, totalLista, recargoPctAplicado, totalCobrado, comprador, notas, items }) {
+function crear({ metodoPago, totalCobrado, comprador, notas, items }) {
   const tx = db.transaction(() => {
     const info = db.prepare(
       `INSERT INTO pedidos
-        (estado, metodo_pago, total_lista, recargo_pct_aplicado, total_cobrado,
+        (estado, metodo_pago, total_cobrado,
          comprador_nombre, comprador_email, comprador_telefono, notas)
-       VALUES ('pendiente', @metodoPago, @totalLista, @recargoPctAplicado, @totalCobrado,
+       VALUES ('pendiente', @metodoPago, @totalCobrado,
                @nombre, @email, @telefono, @notas)`
     ).run({
       metodoPago,
-      totalLista,
-      recargoPctAplicado,
       totalCobrado,
       nombre: comprador?.nombre || null,
       email: comprador?.email || null,

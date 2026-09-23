@@ -1,6 +1,5 @@
 (function () {
   const STORAGE_KEY = 'jqm_carrito';
-  let recargoPct = 6;
 
   function leerCarrito() {
     try {
@@ -35,16 +34,13 @@
     guardarCarrito(items);
   }
 
-  function precioConRecargo(precioLista) {
-    return Math.round(precioLista / (1 - recargoPct / 100) / 100) * 100;
-  }
-
   function render() {
     const items = leerCarrito();
     const cartItemsEl = document.getElementById('cartItems');
     const cartCountEl = document.getElementById('cartCount');
-    const totalListaEl = document.getElementById('cartTotalLista');
-    const totalMpEl = document.getElementById('cartTotalMp');
+    const totalEfectivoEl = document.getElementById('cartTotalEfectivo');
+    const totalTransferenciaEl = document.getElementById('cartTotalTransferencia');
+    const totalCuotasEl = document.getElementById('cartTotalCuotas');
 
     cartCountEl.textContent = items.reduce((acc, i) => acc + i.cantidad, 0);
 
@@ -64,18 +60,22 @@
               <button data-action="mas" data-id="${i.id}">+</button>
             </div>
           </div>
-          <div>$${(i.precio * i.cantidad).toLocaleString('es-AR')}</div>
+          <div>$${(i.precioEfectivo * i.cantidad).toLocaleString('es-AR')}</div>
         </div>`
         )
         .join('');
     }
 
-    const totalLista = items.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-    totalListaEl.textContent = `$${totalLista.toLocaleString('es-AR')}`;
-    totalMpEl.textContent = `$${precioConRecargo(totalLista).toLocaleString('es-AR')}`;
+    const totalEfectivo = items.reduce((acc, i) => acc + i.precioEfectivo * i.cantidad, 0);
+    const totalTransferencia = items.reduce((acc, i) => acc + i.precioTransferencia * i.cantidad, 0);
+    const totalCuotas = items.reduce((acc, i) => acc + i.precioCuotas * i.cantidad, 0);
+    totalEfectivoEl.textContent = `$${totalEfectivo.toLocaleString('es-AR')}`;
+    totalTransferenciaEl.textContent = `$${totalTransferencia.toLocaleString('es-AR')}`;
+    totalCuotasEl.textContent = `$${totalCuotas.toLocaleString('es-AR')}`;
 
     document.getElementById('payMp').disabled = items.length === 0;
     document.getElementById('payTransferencia').disabled = items.length === 0;
+    document.getElementById('payEfectivo').disabled = items.length === 0;
   }
 
   function abrirCarrito() {
@@ -107,15 +107,15 @@
     } catch (err) {
       alert(err.message || 'No se pudo iniciar el pago. Probá de nuevo.');
       btn.disabled = false;
-      btn.textContent = 'Pagar con Mercado Pago';
+      btn.textContent = 'Pagar en cuotas con Mercado Pago';
     }
   }
 
-  async function pedirPorTransferencia() {
+  async function pedirPorMetodoCoordinado(metodo, endpoint, textoMensaje) {
     const items = leerCarrito();
     if (items.length === 0) return;
     try {
-      const resp = await fetch('/api/checkout/transferencia', {
+      const resp = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,7 +126,7 @@
       if (!resp.ok) throw new Error(data.error || 'Error al registrar el pedido');
 
       const resumen = items.map((i) => `${i.cantidad}x ${i.nombre}`).join(', ');
-      const msg = `Hola! Quiero coordinar por transferencia el pedido #${data.pedidoId}: ${resumen}`;
+      const msg = `${textoMensaje} #${data.pedidoId}: ${resumen}`;
       window.open(`https://wa.me/${window.WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
       localStorage.removeItem(STORAGE_KEY);
       render();
@@ -141,7 +141,9 @@
       agregar({
         id: Number(addBtn.dataset.id),
         nombre: addBtn.dataset.nombre,
-        precio: Number(addBtn.dataset.precio),
+        precioEfectivo: Number(addBtn.dataset.precioEfectivo),
+        precioTransferencia: Number(addBtn.dataset.precioTransferencia),
+        precioCuotas: Number(addBtn.dataset.precioCuotas),
         imagen: addBtn.dataset.imagen,
       });
       return;
@@ -155,7 +157,12 @@
     if (e.target.closest('#openCart')) return abrirCarrito();
     if (e.target.closest('#closeCart') || e.target.id === 'cartOverlay') return cerrarCarrito();
     if (e.target.id === 'payMp') return pagarConMercadoPago();
-    if (e.target.id === 'payTransferencia') return pedirPorTransferencia();
+    if (e.target.id === 'payTransferencia') {
+      return pedirPorMetodoCoordinado('transferencia', '/api/checkout/transferencia', 'Hola! Quiero coordinar por transferencia el pedido');
+    }
+    if (e.target.id === 'payEfectivo') {
+      return pedirPorMetodoCoordinado('efectivo', '/api/checkout/efectivo', 'Hola! Quiero coordinar el retiro en persona / pago en efectivo del pedido');
+    }
 
     const filtro = e.target.closest('#catFilters button');
     if (filtro) {
@@ -167,14 +174,6 @@
       });
     }
   });
-
-  fetch('/api/config')
-    .then((r) => r.json())
-    .then((cfg) => {
-      recargoPct = cfg.recargoMpPct;
-      render();
-    })
-    .catch(() => render());
 
   render();
 })();

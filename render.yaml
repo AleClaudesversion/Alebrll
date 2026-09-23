@@ -13,7 +13,5 @@ services:
         value: 0.0.0.0
       - key: DB_PATH
         value: ./data/mates.db
-      - key: RECARGO_MP_DEFAULT_PCT
-        value: "6"
       - key: WHATSAPP_NUMBER
         value: "5490000000000"
